@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Phone, Mail, Lock, Building, Eye, EyeOff, Check, PhoneCall } from "lucide-react";
+import { Phone, Mail, Lock, Building, Eye, EyeOff, Check, PhoneCall, Stethoscope, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import PublicLayout from "../layouts/publicLayout";
@@ -17,13 +17,40 @@ export default function Signup() {
     const [phonenumber, setPhonenumber] = useState("");
     const [password, setPassword] = useState("");
     const [hospitalAddress, setHospitalAddress] = useState("");
-    const [hospitalWebsite, setHospitalWebsite] = useState("");
-    const [weekdayHours, setWeekdayHours] = useState("");
-    const [weekendHours, setWeekendHours] = useState("");
+    const [speciality, setSpeciality] = useState("");
+    // const [hospitalWebsite, setHospitalWebsite] = useState("");
+    // const [weekdayHours, setWeekdayHours] = useState("");
+    // const [weekendHours, setWeekendHours] = useState("");
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
+
+    // Speciality options
+    const specialities = [
+        "Primary Care",
+        "Mental Health",
+        "Cardiology",
+        "Sports Medicine",
+        // "Neurology",
+        "Radiology",
+        // "Orthopedics",
+        // "Pediatrics",
+        // "Gynecology",
+        // "Dermatology",
+        // "Oncology",
+        // "Psychiatry",
+        // "Ophthalmology",
+        // "ENT",
+        // "Gastroenterology",
+        // "Nephrology",
+        // "Endocrinology",
+        // "Pulmonology",
+        // "Urology",
+        // "Anesthesiology",
+        // "Emergency Medicine",
+        // "Multi-Specialty"
+    ];
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -38,9 +65,9 @@ export default function Signup() {
                 phonenumber,
                 password,
                 hospitalAddress,
-                hospitalWebsite,
-                weekdayHours,
-                weekendHours,
+                // hospitalWebsite,
+                // weekdayHours,
+                // weekendHours,
             });
 
             const data = res.data;
@@ -49,6 +76,8 @@ export default function Signup() {
             setEmail("");
             setPhonenumber("");
             setPassword("");
+            setHospitalAddress("");
+            setSpeciality("");
             setAgreedToTerms(false);
 
             router.push("/login");
@@ -124,9 +153,31 @@ export default function Signup() {
                                         onChange={(e) => setHospitalAddress(e.target.value)}
                                     />
                                 </div>
-
-                                {/* Hospital Website */}
+                                {/* Speciality Select Menu */}
                                 <div className="relative">
+                                    <label className="block text-sm font-medium text-gray-300 mb-2">Speciality</label>
+                                    <div className="relative">
+                                        <Stethoscope className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none z-10" />
+                                        <select
+                                            value={speciality}
+                                            onChange={(e) => setSpeciality(e.target.value)}
+                                            className={`w-full bg-white/5 border border-gray-600 rounded-xl pl-12 pr-10 py-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all duration-300 appearance-none cursor-pointer ${speciality === "" ? "text-gray-400" : "text-white"
+                                                }`}
+                                        >
+                                            <option value="" disabled>
+                                                Select a speciality
+                                            </option>
+                                            {specialities.map((spec) => (
+                                                <option key={spec} value={spec}>
+                                                    {spec}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                                    </div>
+                                </div>
+                                {/* Hospital Website */}
+                                {/* <div className="relative">
                                     <label className="block text-sm font-medium text-gray-300 mb-2">Hospital Website</label>
                                     <input
                                         type="url"
@@ -135,10 +186,10 @@ export default function Signup() {
                                         value={hospitalWebsite}
                                         onChange={(e) => setHospitalWebsite(e.target.value)}
                                     />
-                                </div>
+                                </div> */}
 
                                 {/* Hospital Hours */}
-                                <div className="grid grid-cols-2 gap-4">
+                                {/* <div className="grid grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-300 mb-2">Weekday Hours</label>
                                         <input
@@ -159,7 +210,7 @@ export default function Signup() {
                                             onChange={(e) => setWeekendHours(e.target.value)}
                                         />
                                     </div>
-                                </div>
+                                </div> */}
 
                                 {/* Phone Number */}
                                 <div className="relative">
@@ -236,7 +287,7 @@ export default function Signup() {
                                         : 'bg-gray-600 text-gray-400 cursor-not-allowed'
                                         }`}
                                 >
-                                    {loading ? "Building Receptionist..." : "Build Receptionist"}
+                                    {loading ? "Building AI agent..." : "Build AI agent"}
                                 </button>
                             </form>
 

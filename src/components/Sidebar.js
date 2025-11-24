@@ -29,7 +29,7 @@ export default function AppSidebar({ collapsed }) {
         </div>
         {!collapsed && (
           <div>
-            <h2 className="text-xl font-semibold text-gray-900">CareConnect</h2>
+            <h2 className="text-xl font-semibold text-gray-900">Frontdesk AI</h2>
             <p className="text-xs text-gray-600">Hospital Dashboard</p>
           </div>
         )}

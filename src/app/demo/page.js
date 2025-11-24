@@ -4,6 +4,35 @@ import { Phone, PhoneOff, Mic, MicOff } from "lucide-react";
 import ProtectedLayout from "../layouts/protectedLayout";
 import api from "@/auth/baseInstance";
 
+// Specialty data for preview
+const specialtyData = {
+    primaryCare: {
+        name: "Primary Care",
+        firstMessage: "Hello! Thank you for calling Orion West Medical Group Primary Care. How may I help you today?",
+        description: "Handles sick visits, physicals, chronic disease management, immunizations, and referrals."
+    },
+    mentalHealth: {
+        name: "Mental Health",
+        firstMessage: "Hello, thank you for calling Orion West Medical Group Mental Health Services. I'm here to help you. How may I assist you today?",
+        description: "Handles therapy, psychiatric evaluations, counseling, and behavioral health with trauma-informed care."
+    },
+    sportsMedicine: {
+        name: "Sports Medicine",
+        firstMessage: "Hey there! Thanks for calling Orion West Medical Group Sports Medicine. How can I help you get back in the game today?",
+        description: "Handles sports injuries, concussions, sports physicals, and return-to-play evaluations."
+    },
+    cardiology: {
+        name: "Cardiology",
+        firstMessage: "Hello, thank you for calling the Cardiology Department at Orion West Medical Group. I'm here to assist you with scheduling. How may I help you today?",
+        description: "Handles heart consultations, EKGs, stress tests, echocardiograms, and cardiac clearances."
+    },
+    radiology: {
+        name: "Radiology",
+        firstMessage: "Hello, thank you for calling the Radiology Department at Orion West Medical Group. I'm here to help you schedule your imaging appointment. How may I assist you today?",
+        description: "Handles X-rays, CT scans, MRIs, ultrasounds, mammograms, and other imaging services."
+    }
+};
+
 export default function DemoPage() {
     let ws;
     const [isConnected, setIsConnected] = useState(false);
@@ -11,19 +40,49 @@ export default function DemoPage() {
     const [sessionId, setSessionId] = useState(null);
     const [transcript, setTranscript] = useState([]);
     const [callSid, setCallSid] = useState(null);
-    
-    // New state for phone number input
-    const [phoneNumber, setPhoneNumber] = useState("+917989338432");
+
+    // Phone number and call config
+    const [phoneNumber, setPhoneNumber] = useState("");
     const [reason, setReason] = useState("Test results available");
     const [callType, setCallType] = useState("test_results");
     const [isLoading, setIsLoading] = useState(false);
+
+    // Configuration flow state
+    const [specialty, setSpecialty] = useState("");
+    const [isConfigured, setIsConfigured] = useState(false);
+    const [isConfiguring, setIsConfiguring] = useState(false);
+
+    const handleSpecialtyChange = (e) => {
+        setSpecialty(e.target.value);
+        setIsConfigured(false);
+    };
+
+    const configureAgent = async () => {
+        if (!specialty) {
+            alert("Please select a specialty");
+            return;
+        }
+
+        setIsConfiguring(true);
+
+        try {
+            // Simulate API call for configuration (replace with actual API call)
+            // const res = await api.post("/api/agent/configure", { specialty });
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            setIsConfigured(true);
+        } catch (error) {
+            alert("Configuration failed. Please try again.");
+        } finally {
+            setIsConfiguring(false);
+        }
+    };
 
     const startRealtimeSession = async () => {
         try {
             console.log("Starting realtime session...");
             console.log("API Base URL:", process.env.NEXT_PUBLIC_BASE_URL);
 
-            // Validate phone number
             if (!phoneNumber.trim()) {
                 alert("Please enter a phone number");
                 return;
@@ -34,11 +93,11 @@ export default function DemoPage() {
             setCallSid(null);
             setTranscript([]);
 
-            // Make API call with phone number - let backend handle patient lookup
             const res = await api.post("/calls/outbound", {
                 phoneNumber: phoneNumber.trim(),
                 reason: reason.trim() || "Test results available",
-                callType: callType
+                callType: callType,
+                specialty: specialty
             });
             const data = res.data;
 
@@ -56,7 +115,6 @@ export default function DemoPage() {
             setIsConnected(true);
             setSessionId(Math.random().toString(36).substring(2, 8));
 
-            // Open WebSocket to backend to receive live transcripts
             const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
             if (!baseUrl) {
                 console.error("NEXT_PUBLIC_BASE_URL is not defined!");
@@ -99,10 +157,7 @@ export default function DemoPage() {
 
         } catch (err) {
             console.error("Error starting call:", err);
-            console.error("Full error object:", err);
             setIsConnected(false);
-
-            // Show user-friendly error message
             alert(`Failed to start call: ${err.message}`);
         } finally {
             setIsLoading(false);
@@ -120,104 +175,113 @@ export default function DemoPage() {
         setTranscript([]);
     };
 
-    const startRecording = () => setIsRecording(true);
-    const stopRecording = () => setIsRecording(false);
-
     return (
         <ProtectedLayout>
             <div className="p-6 max-w-2xl mx-auto">
                 {/* Header */}
                 <div className="flex items-center mb-4">
                     <Phone className="mr-2 h-5 w-5 text-gray-700" />
-                    <h1 className="text-2xl font-bold text-gray-700">Outbound Call Demo</h1>
-                    <span
-                        className={`ml-2 text-sm px-2 py-1 rounded ${isConnected ? "bg-green-100 text-green-700" : "bg-gray-200 text-gray-600"
-                            }`}
-                    >
-                        {isConnected ? "Connected" : "Disconnected"}
-                    </span>
+                    <h1 className="text-2xl font-bold text-gray-700">Agent Configuration Panel</h1>
                 </div>
 
-                {/* Call Configuration Form */}
+                {/* Configuration Form */}
                 {!isConnected && (
                     <div className="mb-6 p-4 border rounded-lg bg-gray-50">
-                        <h3 className="text-lg font-semibold mb-3 text-gray-700">Call Configuration</h3>
-                        
                         <div className="space-y-4">
-                            {/* Phone Number Input */}
+                            {/* Specialty Select */}
                             <div>
-                                <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 mb-1">
-                                    Phone Number
-                                </label>
-                                <input
-                                    id="phoneNumber"
-                                    type="tel"
-                                    value={phoneNumber}
-                                    onChange={(e) => setPhoneNumber(e.target.value)}
-                                    placeholder="+1234567890"
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600"
-                                    disabled={isLoading}
-                                />
-                                <p className="text-xs text-gray-500 mt-1">
-                                    Enter phone number with country code (e.g., +1234567890)
-                                </p>
-                            </div>
-
-                            {/* Call Reason */}
-                            <div>
-                                <label htmlFor="reason" className="block text-sm font-medium text-gray-700 mb-1">
-                                    Call Reason
-                                </label>
-                                <input
-                                    id="reason"
-                                    type="text"
-                                    value={reason}
-                                    onChange={(e) => setReason(e.target.value)}
-                                    placeholder="Test results available"
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600"
-                                    disabled={isLoading}
-                                />
-                            </div>
-
-                            {/* Call Type */}
-                            <div>
-                                <label htmlFor="callType" className="block text-sm font-medium text-gray-700 mb-1">
-                                    Call Type
+                                <label htmlFor="specialty" className="block text-sm font-medium text-gray-700 mb-1">
+                                    Select Specialty Department
                                 </label>
                                 <select
-                                    id="callType"
-                                    value={callType}
-                                    onChange={(e) => setCallType(e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600"
-                                    disabled={isLoading}
+                                    id="specialty"
+                                    value={specialty}
+                                    onChange={handleSpecialtyChange}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600 bg-white"
+                                    disabled={isConfiguring || isLoading}
                                 >
-                                    <option value="test_results">Test Results</option>
-                                    <option value="appointment_reminder">Appointment Reminder</option>
-                                    <option value="follow_up">Follow Up</option>
-                                    <option value="prescription_reminder">Prescription Reminder</option>
-                                    <option value="general">General</option>
+                                    <option value="">-- Choose a Specialty --</option>
+                                    <option value="primaryCare">Primary Care</option>
+                                    <option value="mentalHealth">Mental Health</option>
+                                    <option value="sportsMedicine">Sports Medicine</option>
+                                    <option value="cardiology">Cardiology</option>
+                                    <option value="radiology">Radiology</option>
                                 </select>
                             </div>
+
+                            {/* Preview Section */}
+                            {specialty && specialtyData[specialty] && (
+                                <div className="p-3 bg-white border rounded-md">
+                                    <h4 className="text-sm font-semibold text-gray-700 mb-2">
+                                        📞 Agent First Message:
+                                    </h4>
+                                    <p className="text-sm text-gray-600 italic border-l-4 border-blue-500 pl-3">
+                                        {specialtyData[specialty].firstMessage}
+                                    </p>
+                                    <p className="text-xs text-gray-500 mt-2">
+                                        {specialtyData[specialty].description}
+                                    </p>
+                                </div>
+                            )}
+
+                            {/* Configure Agent Button */}
+                            {!isConfigured && (
+                                <button
+                                    onClick={configureAgent}
+                                    disabled={!specialty || isConfiguring}
+                                    className={`flex items-center px-3 py-2 rounded text-white ${
+                                        !specialty || isConfiguring
+                                            ? "bg-gray-400 cursor-not-allowed"
+                                            : "bg-blue-600 hover:bg-blue-700"
+                                    }`}
+                                >
+                                    {isConfiguring ? "Configuring..." : "Configure Agent"}
+                                </button>
+                            )}
+
+                            {/* Phone Number Section - Shows after configuration */}
+                            {isConfigured && (
+                                <div className="space-y-4 pt-4 border-t border-gray-200">
+                                    <div>
+                                        <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 mb-1">
+                                            Phone Number
+                                        </label>
+                                        <input
+                                            id="phoneNumber"
+                                            type="tel"
+                                            value={phoneNumber}
+                                            onChange={(e) => setPhoneNumber(e.target.value)}
+                                            placeholder="+1234567890"
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600"
+                                            disabled={isLoading}
+                                        />
+                                        <p className="text-xs text-gray-500 mt-1">
+                                            Enter phone number with country code (e.g., +1234567890)
+                                        </p>
+                                    </div>
+
+                                    {/* Talk with AI Button */}
+                                    <button
+                                        onClick={startRealtimeSession}
+                                        disabled={isLoading || !phoneNumber.trim()}
+                                        className={`flex items-center px-3 py-2 rounded text-white ${
+                                            isLoading || !phoneNumber.trim()
+                                                ? "bg-gray-400 cursor-not-allowed"
+                                                : "bg-blue-600 hover:bg-blue-700"
+                                        }`}
+                                    >
+                                        <Phone className="mr-2 h-4 w-4" />
+                                        {isLoading ? "Talking with AI..." : "Talk with AI"}
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
                 )}
 
-                {/* Connection Controls */}
-                <div className="flex gap-2 mb-4">
-                    {!isConnected ? (
-                        <button
-                            onClick={startRealtimeSession}
-                            disabled={isLoading || !phoneNumber.trim()}
-                            className={`flex items-center px-3 py-2 rounded text-white ${
-                                isLoading || !phoneNumber.trim()
-                                    ? "bg-gray-400 cursor-not-allowed"
-                                    : "bg-blue-600 hover:bg-blue-700"
-                            }`}
-                        >
-                            <Phone className="mr-2 h-4 w-4" />
-                            {isLoading ? "Starting Call..." : "Start Call"}
-                        </button>
-                    ) : (
+                {/* Active Call Controls */}
+                {isConnected && (
+                    <div className="flex gap-2 mb-4">
                         <button
                             onClick={endRealtimeSession}
                             className="flex items-center px-3 py-2 bg-red-600 text-white rounded hover:bg-red-700"
@@ -225,22 +289,20 @@ export default function DemoPage() {
                             <PhoneOff className="mr-2 h-4 w-4" />
                             End Call
                         </button>
-                    )}
 
-                    {/* Recording Controls */}
-                    {isConnected && (
                         <button
                             onClick={() => setIsRecording(!isRecording)}
-                            className={`flex items-center px-3 py-2 rounded text-white ${isRecording
-                                ? "bg-green-600 hover:bg-green-700"
-                                : "bg-gray-400 hover:bg-gray-500"
-                                }`}
+                            className={`flex items-center px-3 py-2 rounded text-white ${
+                                isRecording
+                                    ? "bg-green-600 hover:bg-green-700"
+                                    : "bg-gray-400 hover:bg-gray-500"
+                            }`}
                         >
                             {isRecording ? <Mic className="mr-2 h-4 w-4" /> : <MicOff className="mr-2 h-4 w-4" />}
                             {isRecording ? "Mic On" : "Mic Off"}
                         </button>
-                    )}
-                </div>
+                    </div>
+                )}
 
                 {/* Session Info */}
                 {sessionId && (
@@ -252,39 +314,10 @@ export default function DemoPage() {
                             Phone: <code className="bg-white px-1 py-0.5 rounded">{phoneNumber}</code>
                         </p>
                         <p className="text-sm text-gray-600">
-                            Reason: <code className="bg-white px-1 py-0.5 rounded">{reason}</code>
+                            Specialty: <code className="bg-white px-1 py-0.5 rounded">{specialtyData[specialty]?.name}</code>
                         </p>
                     </div>
                 )}
-
-                {/* Transcript */}
-                <div className="max-h-60 overflow-y-auto border rounded-lg p-3 mb-4">
-                    <h4 className="font-semibold mb-2 text-gray-700">Conversation</h4>
-                    {transcript.length === 0 ? (
-                        <p className="text-gray-500 text-sm">No conversation yet...</p>
-                    ) : (
-                        <div className="space-y-2">
-                            {transcript.map((entry, index) => (
-                                <div key={index} className="flex items-start gap-2">
-                                    <span
-                                        className={`px-2 py-1 text-xs rounded ${entry.speaker === "User"
-                                            ? "bg-blue-100 text-blue-700"
-                                            : "bg-gray-200 text-gray-700"
-                                            }`}
-                                    >
-                                        {entry.speaker}
-                                    </span>
-                                    <div className="flex-1">
-                                        <p className="text-sm">{entry.text}</p>
-                                        <p className="text-xs text-gray-400">
-                                            {entry.timestamp.toLocaleTimeString()}
-                                        </p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
             </div>
         </ProtectedLayout>
     );

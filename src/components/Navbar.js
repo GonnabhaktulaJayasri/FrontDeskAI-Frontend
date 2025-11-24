@@ -18,28 +18,28 @@ export default function Navbar() {
               <Phone className="w-4 h-4 text-white" />
             </div>
             <span className="text-xl font-bold text-white tracking-tight">
-              CareConnect
+              Frontdesk AI
             </span>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
+          {/* <nav className="hidden md:flex items-center space-x-8"> */}
             {/* Products Dropdown */}
-            <div className="relative">
+            {/* <div className="relative">
               <button
                 onMouseEnter={() => setIsProductsOpen(true)}
                 onMouseLeave={() => setIsProductsOpen(false)}
                 className="flex items-center text-gray-300 hover:text-white font-medium transition-colors"
               >
-                Products
-                <ChevronDown
+                Products */}
+                {/* <ChevronDown
                   className={`w-4 h-4 ml-1 transition-transform duration-300 ${
                     isProductsOpen ? "rotate-180" : ""
                   }`}
                 />
-              </button>
+              </button> */}
 
-              {isProductsOpen && (
+              {/* {isProductsOpen && (
                 <div
                   onMouseEnter={() => setIsProductsOpen(true)}
                   onMouseLeave={() => setIsProductsOpen(false)}
@@ -97,15 +97,15 @@ export default function Navbar() {
             >
               About
             </Link>
-          </nav>
+          </nav> */}
 
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center space-x-4">
             <Link
               href="/login"
-              className="text-gray-300 hover:text-white transition-colors px-4 py-2 rounded-lg font-medium"
+              className="text-gray-300 hover:text-white transition-colors px-4 py-2 rounded-lg font-large"
             >
-              Sign In
+              Log In
             </Link>
             <Link
               href="/signup"
@@ -116,17 +116,17 @@ export default function Navbar() {
           </div>
 
           {/* Mobile Menu Toggle */}
-          <button
+          {/* <button
             className="md:hidden text-gray-300 hover:text-white transition-colors"
             onClick={() => setIsOpen(!isOpen)}
           >
             {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+          </button> */}
         </div>
       </div>
 
       {/* Mobile Menu */}
-      {isOpen && (
+      {/* {isOpen && (
         <div className="md:hidden bg-slate-900/95 backdrop-blur-xl border-t border-slate-800 px-6 py-4 space-y-4">
           <Link href="/inbound" className="block text-gray-300 hover:text-white">
             Inbound Calls
@@ -164,7 +164,7 @@ export default function Navbar() {
             </Link>
           </div>
         </div>
-      )}
+      )} */}
     </header>
   );
 }
