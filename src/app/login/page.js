@@ -36,7 +36,7 @@ export default function Login() {
             setCookies('token', data.token);
             setCookies('hospital', JSON.stringify(data.hospital));
 
-            router.push("/demo");
+            router.push("/dashboard");
         } catch (err) {
             const apiMessage = err.response?.data?.message;
             setError(apiMessage || "Something went wrong. Please try again.");
