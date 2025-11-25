@@ -182,14 +182,17 @@ export default function OutboundCallsPage() {
                                     />
                                 </div>
                                 <div>
-                                    <label className="text-sm font-medium text-gray-700 mb-2 block">Call Purpose (Optional)</label>
-                                    <textarea
-                                        placeholder="e.g., Appointment reminder, follow-up call..."
+                                    <label className="text-sm font-medium text-gray-700 mb-2 block">Call Purpose</label>
+                                    <select
                                         value={callData.purpose}
                                         onChange={(e) => setCallData(prev => ({ ...prev, purpose: e.target.value }))}
-                                        rows={3}
-                                        className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder:text-gray-600"
-                                    />
+                                        className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 bg-white"
+                                    >
+                                        <option value="">Select a purpose...</option>
+                                        <option value="Appointment Reminder">Appointment Reminder</option>
+                                        <option value="Follow-up Call">Follow-up Call</option>
+                                        <option value="General Inquiry">General Inquiry</option>
+                                    </select>
                                 </div>
                                 <button
                                     onClick={handleMakeCall}
@@ -197,7 +200,7 @@ export default function OutboundCallsPage() {
                                     className="w-full bg-gray-600 text-white px-4 py-2 rounded flex items-center justify-center space-x-2 hover:bg-blue-700 transition"
                                 >
                                     <Phone className="h-4 w-4" />
-                                    <span>{callData.to.trim() ? "Start Call" : "Enter Number"}</span>
+                                    <span>Schedule Call</span>
                                 </button>
                             </div>
                         </div>
@@ -237,7 +240,7 @@ export default function OutboundCallsPage() {
                     </div>
 
                     {/* Quick Actions */}
-                    <div className="border rounded shadow-sm bg-white">
+                    {/* <div className="border rounded shadow-sm bg-white">
                         <div className="p-4 border-b">
                             <h2 className="text-lg font-semibold text-gray-800">Quick Actions</h2>
                             <p className="text-sm text-gray-600">Common outbound call scenarios</p>
@@ -265,7 +268,7 @@ export default function OutboundCallsPage() {
                                 <span className="text-gray-800 text-sm">General Inquiry</span>
                             </button>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </ProtectedLayout>
         </>

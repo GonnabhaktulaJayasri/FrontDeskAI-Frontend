@@ -498,7 +498,7 @@ export default function Landing() {
           <FAQCTASection />
 
           {/* Floating Chat Button */}
-          <Link
+          {/* <Link
             href="/chatbot"
             className="fixed bottom-6 right-6 z-50 group"
           >
@@ -512,7 +512,7 @@ export default function Landing() {
                 <div className="absolute top-full right-4 w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-gray-900"></div>
               </div>
             </div>
-          </Link>
+          </Link> */}
         </div>
       </section>
     </PublicLayout>
