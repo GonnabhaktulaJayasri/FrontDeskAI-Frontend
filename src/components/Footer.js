@@ -19,7 +19,7 @@ export default function Footer() {
               <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center mr-3 shadow-lg shadow-blue-500/30">
                 <Phone className="w-4 h-4 text-white" />
               </div>
-              <span className="text-xl font-bold text-white">CareConnect</span>
+              <span className="text-xl font-bold text-white">Frontdesk AI</span>
             </div>
             <p className="text-gray-400 leading-relaxed mb-6">
               Always-on AI assistant for hospitals — answering calls, booking appointments, 

@@ -36,7 +36,21 @@ export default function AppSidebar({ collapsed }) {
       </div>
 
       {/* Menu Items */}
-      <Menu className="flex-1 py-2 m-1">
+      <Menu
+        className="flex-1 py-2 m-1"
+        menuItemStyles={{
+          button: ({ active }) => ({
+            backgroundColor: active ? '#DBEAFE' : 'transparent',
+            color: active ? '#1E40AF' : '#4B5563',
+            borderRadius: '8px',
+            margin: '2px 8px',
+            '&:hover': {
+              backgroundColor: active ? '#DBEAFE' : '#EFF6FF',
+              color: '#1E40AF',
+            },
+          }),
+        }}
+      >
         {Routes.map((route) => (
           <MenuItem
             key={route.text}
@@ -44,13 +58,8 @@ export default function AppSidebar({ collapsed }) {
             title={collapsed ? route.text : undefined}
             component={<Link href={route.href} />}
             active={isActive(route.href)}
-            className={`flex items-center space-x-3 rounded-lg py-1 text-sm font-medium transition-colors ${isActive(route.href)
-              ? "bg-blue-200 text-blue-800/70 shadow"
-              : "text-gray-600 hover:bg-gray-50 hover:text-gray-700"
-              }`}
           >
             {!collapsed && route.text}
-
           </MenuItem>
         ))}
       </Menu>
