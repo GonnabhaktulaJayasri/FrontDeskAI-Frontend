@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
-import { Phone, Mail, Lock, Building, Eye, EyeOff, Check, PhoneCall, Stethoscope, ChevronDown } from "lucide-react";
-import { useState } from "react";
+import { Phone, Mail, Lock, Building, Eye, EyeOff, Check, PhoneCall, Stethoscope, ChevronDown, X } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import PublicLayout from "../layouts/publicLayout";
 import api from "@/auth/baseInstance";
@@ -9,6 +9,8 @@ import api from "@/auth/baseInstance";
 export default function Signup() {
     const [showPassword, setShowPassword] = useState(false);
     const [agreedToTerms, setAgreedToTerms] = useState(false);
+    const [showSpecialityDropdown, setShowSpecialityDropdown] = useState(false);
+    const dropdownRef = useRef(null);
 
     const router = useRouter();
     // Form state
@@ -17,40 +19,49 @@ export default function Signup() {
     const [phonenumber, setPhonenumber] = useState("");
     const [password, setPassword] = useState("");
     const [hospitalAddress, setHospitalAddress] = useState("");
-    const [speciality, setSpeciality] = useState("");
-    // const [hospitalWebsite, setHospitalWebsite] = useState("");
-    // const [weekdayHours, setWeekdayHours] = useState("");
-    // const [weekendHours, setWeekendHours] = useState("");
+    const [specialities, setSpecialities] = useState([]);
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
 
-    // Speciality options
-    const specialities = [
-        "Primary Care",
-        "Mental Health",
-        "Cardiology",
-        "Sports Medicine",
-        // "Neurology",
-        "Radiology",
-        // "Orthopedics",
-        // "Pediatrics",
-        // "Gynecology",
-        // "Dermatology",
-        // "Oncology",
-        // "Psychiatry",
-        // "Ophthalmology",
-        // "ENT",
-        // "Gastroenterology",
-        // "Nephrology",
-        // "Endocrinology",
-        // "Pulmonology",
-        // "Urology",
-        // "Anesthesiology",
-        // "Emergency Medicine",
-        // "Multi-Specialty"
+    // Speciality options with label (display) and value (API)
+    const specialityOptions = [
+        { label: "Primary Care", value: "primaryCare" },
+        { label: "Mental Health", value: "mentalHealth" },
+        { label: "Cardiology", value: "cardiology" },
+        { label: "Sports Medicine", value: "sportsMedicine" },
+        { label: "Radiology", value: "radiology" },
     ];
+
+    // Helper to get label from value
+    const getSpecialityLabel = (value) => {
+        const option = specialityOptions.find((opt) => opt.value === value);
+        return option ? option.label : value;
+    };
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setShowSpecialityDropdown(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    const toggleSpeciality = (value) => {
+        setSpecialities((prev) =>
+            prev.includes(value)
+                ? prev.filter((s) => s !== value)
+                : [...prev, value]
+        );
+    };
+
+    const removeSpeciality = (value) => {
+        setSpecialities((prev) => prev.filter((s) => s !== value));
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -59,15 +70,13 @@ export default function Signup() {
         setLoading(true);
 
         try {
-            const res = await api.post("/auth/signup", {
+            const res = await api.post("/auth/register", {
                 name,
                 email,
                 phonenumber,
                 password,
                 hospitalAddress,
-                // hospitalWebsite,
-                // weekdayHours,
-                // weekendHours,
+                speciality: specialities, // Send as array
             });
 
             const data = res.data;
@@ -77,7 +86,7 @@ export default function Signup() {
             setPhonenumber("");
             setPassword("");
             setHospitalAddress("");
-            setSpeciality("");
+            setSpecialities([]);
             setAgreedToTerms(false);
 
             router.push("/login");
@@ -153,64 +162,66 @@ export default function Signup() {
                                         onChange={(e) => setHospitalAddress(e.target.value)}
                                     />
                                 </div>
-                                {/* Speciality Select Menu */}
-                                <div className="relative">
-                                    <label className="block text-sm font-medium text-gray-300 mb-2">Speciality</label>
-                                    <div className="relative">
-                                        <Stethoscope className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none z-10" />
-                                        <select
-                                            value={speciality}
-                                            onChange={(e) => setSpeciality(e.target.value)}
-                                            className={`w-full bg-white/5 border border-gray-600 rounded-xl pl-12 pr-10 py-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all duration-300 appearance-none cursor-pointer ${speciality === "" ? "text-gray-400" : "text-white"
-                                                }`}
-                                        >
-                                            <option value="" disabled>
-                                                Select a speciality
-                                            </option>
-                                            {specialities.map((spec) => (
-                                                <option key={spec} value={spec}>
-                                                    {spec}
-                                                </option>
-                                            ))}
-                                        </select>
-                                        <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
-                                    </div>
-                                </div>
-                                {/* Hospital Website */}
-                                {/* <div className="relative">
-                                    <label className="block text-sm font-medium text-gray-300 mb-2">Hospital Website</label>
-                                    <input
-                                        type="url"
-                                        placeholder="https://www.example.com"
-                                        className="w-full bg-white/5 border border-gray-600 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all duration-300"
-                                        value={hospitalWebsite}
-                                        onChange={(e) => setHospitalWebsite(e.target.value)}
-                                    />
-                                </div> */}
 
-                                {/* Hospital Hours */}
-                                {/* <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-300 mb-2">Weekday Hours</label>
-                                        <input
-                                            type="text"
-                                            placeholder="8:00 AM - 8:00 PM"
-                                            className="w-full bg-white/5 border border-gray-600 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all duration-300"
-                                            value={weekdayHours}
-                                            onChange={(e) => setWeekdayHours(e.target.value)}
-                                        />
+                                {/* Speciality Multi-Select */}
+                                <div className="relative" ref={dropdownRef}>
+                                    <label className="block text-sm font-medium text-gray-300 mb-2">Specialities</label>
+                                    <div className="relative">
+                                        <Stethoscope className="absolute left-3 top-3 w-5 h-5 text-gray-400 pointer-events-none z-10" />
+                                        <div
+                                            onClick={() => setShowSpecialityDropdown(!showSpecialityDropdown)}
+                                            className="w-full bg-white/5 border border-gray-600 rounded-xl pl-12 pr-10 py-3 min-h-[48px] focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all duration-300 cursor-pointer"
+                                        >
+                                            {specialities.length === 0 ? (
+                                                <span className="text-gray-400">Select specialities</span>
+                                            ) : (
+                                                <div className="flex flex-wrap gap-2">
+                                                    {specialities.map((value) => (
+                                                        <span
+                                                            key={value}
+                                                            className="inline-flex items-center gap-1 bg-blue-600/30 text-blue-300 px-2 py-1 rounded-lg text-sm"
+                                                        >
+                                                            {getSpecialityLabel(value)}
+                                                            <button
+                                                                type="button"
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    removeSpeciality(value);
+                                                                }}
+                                                                className="hover:text-white transition-colors"
+                                                            >
+                                                                <X className="w-3 h-3" />
+                                                            </button>
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                        <ChevronDown className={`absolute right-3 top-3 w-5 h-5 text-gray-400 pointer-events-none transition-transform duration-200 ${showSpecialityDropdown ? 'rotate-180' : ''}`} />
                                     </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-300 mb-2">Weekend Hours</label>
-                                        <input
-                                            type="text"
-                                            placeholder="9:00 AM - 5:00 PM"
-                                            className="w-full bg-white/5 border border-gray-600 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all duration-300"
-                                            value={weekendHours}
-                                            onChange={(e) => setWeekendHours(e.target.value)}
-                                        />
-                                    </div>
-                                </div> */}
+
+                                    {/* Dropdown Menu */}
+                                    {showSpecialityDropdown && (
+                                        <div className="absolute z-20 w-full mt-2 bg-slate-800 border border-gray-600 rounded-xl shadow-xl overflow-hidden">
+                                            {specialityOptions.map((option) => (
+                                                <div
+                                                    key={option.value}
+                                                    onClick={() => toggleSpeciality(option.value)}
+                                                    className="flex items-center gap-3 px-4 py-3 hover:bg-white/10 cursor-pointer transition-colors"
+                                                >
+                                                    <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all duration-200 ${
+                                                        specialities.includes(option.value)
+                                                            ? 'bg-blue-600 border-blue-600'
+                                                            : 'border-gray-500'
+                                                    }`}>
+                                                        {specialities.includes(option.value) && <Check className="w-3 h-3 text-white" />}
+                                                    </div>
+                                                    <span className="text-white">{option.label}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
 
                                 {/* Phone Number */}
                                 <div className="relative">
@@ -276,7 +287,6 @@ export default function Signup() {
 
                                 {/* Error/Success messages */}
                                 {error && <p className="text-red-400 text-sm">{error}</p>}
-                                {/* {success && <p className="text-green-400 text-sm">{success}</p>} */}
 
                                 {/* Submit Button */}
                                 <button
@@ -287,26 +297,9 @@ export default function Signup() {
                                         : 'bg-gray-600 text-gray-400 cursor-not-allowed'
                                         }`}
                                 >
-                                    {loading ? "Building AI agent..." : "Build AI agent"}
+                                    {loading ? "Registering..." : "Resgister Now"}
                                 </button>
                             </form>
-
-                            {/* Divider */}
-                            {/* <div className="my-8 flex items-center">
-                                <div className="flex-1 border-t border-gray-600"></div>
-                                <span className="px-4 text-gray-400 text-sm">or</span>
-                                <div className="flex-1 border-t border-gray-600"></div>
-                            </div> */}
-
-                            {/* Login Link */}
-                            {/* <div className="text-center">
-                                <p className="text-gray-400">
-                                    Already have an account?{" "}
-                                    <Link href="/login" className="text-blue-400 hover:text-blue-300 transition-colors duration-300 font-semibold">
-                                        Sign in here
-                                    </Link>
-                                </p>
-                            </div> */}
                         </div>
                     </div>
                 </div>

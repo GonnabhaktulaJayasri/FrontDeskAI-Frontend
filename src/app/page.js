@@ -419,7 +419,7 @@ export default function Landing() {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
               <Link
-                href="/auth/signup"
+                href="/signup"
                 className="group px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold shadow-2xl hover:shadow-blue-500/50 transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2"
               >
                 Start Free Trial

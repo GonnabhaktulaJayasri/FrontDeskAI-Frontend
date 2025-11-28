@@ -41,7 +41,7 @@ export default function OutboundCallsPage() {
     // ============================================
     const fetchScheduledCalls = async () => {
         try {
-            // const response = await api.get("/scheduled-calls/upcoming?limit=10");
+            const response = await api.get("/scheduled-calls/upcoming?limit=10");
             if (response.data.success) {
                 setRecentCalls(response.data.calls || []);
             }

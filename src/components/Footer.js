@@ -77,11 +77,11 @@ export default function Footer() {
             <div className="space-y-4">
               <div className="flex items-center text-gray-400">
                 <Mail className="w-5 h-5 mr-3 text-blue-400" />
-                <span>support@medidesk.ai</span>
+                <span>support@frontdesk.ai</span>
               </div>
               <div className="flex items-center text-gray-400">
                 <Phone className="w-5 h-5 mr-3 text-blue-400" />
-                <span>1-800-MEDI-DESK</span>
+                <span>1-800-FRONT-DESK</span>
               </div>
               <div className="flex items-start text-gray-400">
                 <MapPin className="w-5 h-5 mr-3 text-blue-400 mt-0.5" />
@@ -95,7 +95,7 @@ export default function Footer() {
         <div className="border-t border-white/10 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-400 mb-4 md:mb-0">
-              © {new Date().getFullYear()} MediDesk AI. All rights reserved.
+              © {new Date().getFullYear()} Frontdesk AI. All rights reserved.
             </p>
             <div className="flex space-x-6">
               <Link href="/privacy" className="text-gray-400 hover:text-white transition-colors duration-300 text-sm">
